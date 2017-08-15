@@ -1,1 +1,1 @@
-export IMMUCONF_CFG=./config/dev.edn
+export IMMUCONF_CFG="./config/ssh_dev.edn":"./config/cassandra_dev.edn"

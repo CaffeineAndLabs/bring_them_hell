@@ -9,11 +9,13 @@
 
 ;; Databases
 (defn get-all-tasks
-  []
-  (let [session (alia/connect (alia/cluster {:contact-points ["192.168.99.100"]}))
+  [{:keys [ip keyspace]}]
+  (let [session (alia/connect (alia/cluster {:contact-points [ip]}))
         table "monkey_tasks"]
-    (alia/execute session "USE bring_them_hell_dev")
-    (alia/execute session "SELECT * from monkey_tasks")))
+    (->> (str "USE " keyspace)
+         (alia/execute session))
+    (->> (str "SELECT * from " table)
+         (alia/execute session))))
 
 ;; Time things
 (defn get-local-now
@@ -40,7 +42,8 @@
   [& args]
   (println "Bring them Hell !")
   (def my-cfg (config/load))
-  (->> (get-all-tasks)
+  (->> (config/get my-cfg :cassandra)
+       (get-all-tasks)
        (apply :nodes)
        (rand-nth) ; return {:username "USERNAME", :hostname "HOSTNAME"}
        (ssh-execute-cmd "reboot" (config/get my-cfg :ssh :private-key-path))
