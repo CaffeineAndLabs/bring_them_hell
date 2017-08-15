@@ -1,0 +1,2 @@
+{:ssh
+ {:private-key-path "<PATH_TO_YOUR_PRIVATE_KEY" }}

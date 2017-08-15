@@ -1,0 +1,1 @@
+export IMMUCONF_CFG=./config/dev.edn
