@@ -11,3 +11,5 @@ pom.xml.asc
 .hg/
 # Config File
 config/*_dev.edn
+# Logs
+log/*

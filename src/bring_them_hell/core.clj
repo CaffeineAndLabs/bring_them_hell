@@ -1,11 +1,14 @@
 (ns bring-them-hell.core
   (:require [overtone.at-at :as at]
             [immuconf.config :as config]
+            [clojure.tools.logging :as log]
             [clj-ssh.ssh :refer [ssh-agent session with-connection ssh add-identity]]
             [cheshire.core :as json]
             [swiss.arrows :refer :all]
-            [qbits.alia :as alia]
-            [clj-time.local :as time]))
+            [qbits.alia :as alia]))
+
+(def my-pool (at/mk-pool))
+(def my-cfg (config/load))
 
 ;; Databases
 (defn get-all-tasks
@@ -16,16 +19,6 @@
          (alia/execute session))
     (->> (str "SELECT * from " table)
          (alia/execute session))))
-
-;; Time things
-(defn get-local-now
-  []
-  (time/format-local-time (time/local-now) :hour-minute-second))
-
-(defn print-time-every-sec
-  []
-  (def my-pool (at/mk-pool))
-  (at/every 1000 #(println (get-local-now)) my-pool))
 
 ;; SSH things
 (defn ssh-execute-cmd
@@ -38,14 +31,29 @@
           (println (result :out))))))
   hostname)
 
+(defn exec-monkey-task
+  [monkey-task]
+  (->> (monkey-task :uuid)
+       (log/info "[EXECUTING] tasks UUID:"))
+  (->> (:nodes monkey-task)
+       (rand-nth)
+       (ssh-execute-cmd "reboot" (config/get my-cfg :ssh :private-key-path))
+       (log/info "[CHAOS] reboot node:")))
+
+(defn cron-monkey-task
+  [monkey-task]
+  (->> (monkey-task :uuid)
+       (log/info "[CREATE] cron for tasks UUID:"))
+  (at/every 60000 #(exec-monkey-task monkey-task) my-pool))
+
+(defn compute-monkey-tasks
+  "Create cron tasks for every monkey tasks"
+  [monkey-tasks]
+  (apply cron-monkey-task monkey-tasks))
+
 (defn -main
   [& args]
   (println "Bring them Hell !")
-  (def my-cfg (config/load))
   (->> (config/get my-cfg :cassandra)
        (get-all-tasks)
-       (apply :nodes)
-       (rand-nth) ; return {:username "USERNAME", :hostname "HOSTNAME"}
-       (ssh-execute-cmd "reboot" (config/get my-cfg :ssh :private-key-path))
-       (str "[REBOOT] - Chaos is here ! NODE: ")
-       (println)))
+       (compute-monkey-tasks)))
