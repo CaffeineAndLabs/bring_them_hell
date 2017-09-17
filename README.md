@@ -1,6 +1,6 @@
-# hell-as-a-service
+# bring-them-hell
 
-A little chaos monkey written in clojure
+A little chaos monkey written in Clojure
 
 ## Status
 
@@ -12,9 +12,8 @@ WIP
 
   * API: Permit to add, list, remove monkey jobs
   * ChaosMonkey: Reads monkey jobs in cassandra and execute some tasks.
-<aside class="notice">
-For now ChaosMonkey component is not scalable. If you scale this, you will have much more chaos … 
-</aside>
+
+** For now ChaosMonkey component is not scalable. If you scale this, you will have much more chaos … ** 
 
 ### Databases
   * Use Cassandra to store monkey jobs
