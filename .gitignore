@@ -13,3 +13,6 @@ pom.xml.asc
 config/*_dev.edn
 # Logs
 log/*
+# vagrant dir
+.vagrant
+vagrant/ssh

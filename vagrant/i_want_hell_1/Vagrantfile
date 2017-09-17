@@ -1,0 +1,27 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/trusty64"
+
+  config.vm.network "private_network", ip: "10.42.42.43"
+
+  config.ssh.forward_agent    = true
+  config.ssh.insert_key       = false
+  config.ssh.private_key_path =  ["~/.vagrant.d/insecure_private_key","../ssh/bring-them-hell-test"]
+  config.vm.provision :shell, privileged: false do |s|
+    ssh_pub_key = File.readlines("../ssh/bring-them-hell-test.pub").first.strip
+    s.inline = <<-SHELL
+      echo #{ssh_pub_key} >> /home/$USER/.ssh/authorized_keys
+      sudo sh -c "[ -d "/root/.ssh" ] || mkdir /root/.ssh"
+      sudo sh -c "echo #{ssh_pub_key} >> /root/.ssh/authorized_keys"
+    SHELL
+  end
+
+  config.vm.define "i_want_hell_1" do |v|
+  end
+end

@@ -38,7 +38,7 @@
   (->> (:nodes monkey-task)
        (rand-nth)
        (ssh-execute-cmd "reboot" (config/get my-cfg :ssh :private-key-path))
-       (log/info "[CHAOS] reboot node:")))
+       (log/info "[CHAOS] reboot node: ")))
 
 (defn cron-monkey-task
   [monkey-task]
