@@ -12,7 +12,13 @@
                  [swiss-arrows "1.0.0"]
                  [cc.qbits/alia-all "4.0.0"]
                  [cheshire "5.7.1"]
+                 [metosin/schema-tools "0.9.0"]
+                 [metosin/compojure-api "1.1.11"]
                  [clj-time "0.14.0"]]
   :main ^:skip-aot bring-them-hell.core
+  :ring {:handler bring-them-hell-api.handler/app}
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:dev {:dependencies [[javax.servlet/javax.servlet-api "3.1.0"]
+                                  [cheshire "5.7.1"]
+                                  [ring/ring-mock "0.3.0"]]
+                   :plugins [[lein-ring "0.12.0"]]}})

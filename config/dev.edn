@@ -1,0 +1,2 @@
+{:cassandra {:ip "127.0.0.1"
+            :keyspace "bring_them_hell"}}
