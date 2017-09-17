@@ -1,6 +1,6 @@
-(ns hell-as-a-service.core-test
+(ns bring-them-hell.core-test
   (:require [clojure.test :refer :all]
-            [hell-as-a-service.core :refer :all]))
+            [bring-them-hell.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."
