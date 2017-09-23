@@ -35,5 +35,5 @@
   [& args]
   (println "Bring them Hell !")
   (->> (config/get my-cfg :cassandra)
-       (db/get-all-tasks)
+       (db/get-all-monkey-tasks)
        (compute-monkey-tasks)))

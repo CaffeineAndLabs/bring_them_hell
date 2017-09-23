@@ -6,6 +6,7 @@
             [qbits.alia :as alia]
             [schema.core :as s]
             [bring-them-hell.util :as util]
+            [bring-them-hell.db :as db]
             [bring-them-hell.repr :as repr]))
 
 ;; Configuration file
@@ -14,21 +15,6 @@
   (config/load))
 
 (def my-config (load-config-file))
-
-;; Database things
-(s/defn insert-monkey-task-into-db
-  [db-details :- repr/CassandraDbDetails
-   monkey-task :- repr/MonkeyTask]
-  (let [session (alia/connect (alia/cluster {:contact-points [(db-details :ip)]}))]
-    (alia/execute session (str "USE " (db-details :keyspace)))
-    (alia/execute session (str "INSERT INTO monkey_tasks JSON '" (json/generate-string monkey-task) "'"))))
-
-(s/defn get-all-monkey-tasks
-  [db-details :- repr/CassandraDbDetails]
-  (let [session (alia/connect (alia/cluster {:contact-points [(db-details :ip)]}))
-        table "monkey_tasks"]
-    (alia/execute session (str "USE " (db-details :keyspace)))
-    (alia/execute session "SELECT * from monkey_tasks")))
 
 ;; Main - App
 (def app
@@ -55,13 +41,13 @@
             (GET "/monkey/tasks" []
                  :return [repr/MonkeyTask]
                  :summary "Return all tasks in the DB"
-                 (ok (get-all-monkey-tasks (my-config :cassandra))))
+                 (ok (db/get-all-monkey-tasks (my-config :cassandra))))
 
             (POST "/monkey/task/new" []
                   :return repr/MonkeyTask
                   :body [monkey-task repr/MonkeyTask]
                   :summary "Create your monkey task"
                   (let [monkey-task (util/generate-uuid-in-task-if-needed monkey-task)]
-                    (insert-monkey-task-into-db (my-config :cassandra) monkey-task)
+                    (db/insert-monkey-task (my-config :cassandra) monkey-task)
                     (ok monkey-task))))))
 
