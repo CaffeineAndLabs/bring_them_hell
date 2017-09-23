@@ -1,4 +1,4 @@
-(ns bring-them-hell-api.handler
+(ns bring-them-hell.api
   (:require [compojure.api.sweet :refer :all]
             [ring.util.http-response :refer :all]
             [immuconf.config :as config]
