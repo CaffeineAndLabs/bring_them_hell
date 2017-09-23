@@ -5,20 +5,11 @@
             [cheshire.core :as json]
             [swiss.arrows :refer :all]
             [qbits.alia :as alia]
+            [bring-them-hell.db :as db]
             [bring-them-hell.ssh :as ssh]))
 
 (def my-pool (at/mk-pool))
 (def my-cfg (config/load))
-
-;; Databases
-(defn get-all-tasks
-  [{:keys [ip keyspace]}]
-  (let [session (alia/connect (alia/cluster {:contact-points [ip]}))
-        table "monkey_tasks"]
-    (->> (str "USE " keyspace)
-         (alia/execute session))
-    (->> (str "SELECT * from " table)
-         (alia/execute session))))
 
 (defn exec-monkey-task
   [monkey-task]
@@ -44,5 +35,5 @@
   [& args]
   (println "Bring them Hell !")
   (->> (config/get my-cfg :cassandra)
-       (get-all-tasks)
+       (db/get-all-tasks)
        (compute-monkey-tasks)))
